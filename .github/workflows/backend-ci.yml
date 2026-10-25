@@ -92,6 +92,10 @@ jobs:
         run: php artisan test
 
       - name: OpenAPI document is up to date
+        # Scramble reads column types from the (migrated) database, so the export
+        # must use the same database the migrations ran against.
+        env:
+          DB_DATABASE: medconnect_test
         run: |
           php artisan scramble:export
           git diff --exit-code -- docs/api/openapi.json || (echo "::error::Run 'php artisan scramble:export' and commit docs/api/openapi.json" && exit 1)
